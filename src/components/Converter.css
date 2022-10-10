@@ -1,0 +1,19 @@
+.converter_main_block {
+    position: absolute;
+    top: 105px;
+    width: 100vw;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.converter_main_item {
+    margin: 20px;
+}
+
+input,
+select {
+    height: 30px;
+    text-align: center;
+}

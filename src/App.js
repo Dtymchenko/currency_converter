@@ -1,23 +1,48 @@
-import logo from './logo.svg';
 import './App.css';
+import React from 'react';
+import Converter from './components/Converter';
 
 function App() {
+  const [date, setDate] = React.useState()
+  const [value1, setValue1] = React.useState(0)
+  const [value2, setValue2] = React.useState(0)
+
+  React.useEffect(() => {
+    async function getData() {
+      const actualData = await fetch("https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?json")
+      .then((response) => {
+        return response.json()
+      })
+      .catch((err) => {
+        console.warn(err)
+        alert("Not received info")
+      })
+      setValue1(actualData[25].rate)
+      setValue2(actualData[32].rate)
+      setDate(actualData[0].exchangedate)
+    }
+    getData()
+  }, [])
+
+  const rates = {
+    UAH: 1,
+    USD: value1,
+    EUR: value2
+  }
+
+
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+        <h2>Official Currency Rates by National Bank of Ukraine</h2>
+        <h3>Stated for {date}</h3>
+        <div className='currency_rate_block'>
+          <div className='currency_rate_number'>{value1} UAH per 1 USD</div>
+          <div className='divider'></div>
+          <div className='currency_rate_number'>{value2} UAH per 1 EUR</div>
+        </div>
       </header>
+      <Converter value1={value1} value2={value2} rates={rates} />
     </div>
   );
 }
