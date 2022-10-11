@@ -8,33 +8,29 @@ export default function Converter({ value1, value2, rates }) {
     const [fromCurrency, setFromCurrency] = React.useState("USD")
     const [toCurrency, setToCurrency] = React.useState("UAH")
 
-    const onChangeFromValue = (e) => {
+    React.useEffect(() => {
+        setInput2((input1 * value1).toFixed(2))
+    }, [value1])
+
+    const onChangeFromValue = React.useCallback((e) => {
         setInput1(e.target.value)
-        setInput2(input1 * rates[fromCurrency] / rates[toCurrency])
-    }
+        setInput2((e.target.value * rates[fromCurrency] / rates[toCurrency]).toFixed(2))
+    },[rates, fromCurrency, toCurrency]) 
     
-    const onChangeToValue = (e) => {
+    const onChangeToValue = React.useCallback((e) => {
         setInput2(e.target.value)
-        setInput1(input2 / rates[fromCurrency] * rates[toCurrency])
-    }
+        setInput1((e.target.value / rates[fromCurrency] * rates[toCurrency]).toFixed(2))
+    },[rates, fromCurrency, toCurrency]) 
 
-    const onChangeFromCurrency = (e) => {
+    const onChangeFromCurrency = React.useCallback((e) => {
         setFromCurrency(e.target.value)
-        setInput2(input1 * rates[fromCurrency] / rates[toCurrency])
-    }
+        setInput2((input1 * rates[e.target.value] / rates[toCurrency]).toFixed(2))
+    },[input1, rates, toCurrency]) 
 
-    const onChangeToCurrency = (e) => {
+    const onChangeToCurrency = React.useCallback((e) => {
         setToCurrency(e.target.value)
-        setInput1(input2 / rates[fromCurrency] * rates[toCurrency])
-    }
-
-    React.useEffect(() => {
-        setInput2(input1 * rates[fromCurrency] / rates[toCurrency])
-    }, [input1, fromCurrency])
-
-    React.useEffect(() => {
-        setInput1(input2 / rates[fromCurrency] * rates[toCurrency])
-    }, [input2, toCurrency])
+        setInput1((input2 / rates[fromCurrency] * rates[e.target.value]).toFixed(2))
+    },[input2, rates, fromCurrency]) 
 
     return (
     <div className='converter_main_block'>
