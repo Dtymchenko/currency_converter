@@ -1,13 +1,16 @@
-import './App.css';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Converter from './components/Converter';
+import constants from './constants';
 
-function App() {
-  const [date, setDate] = React.useState()
-  const [value1, setValue1] = React.useState(0)
-  const [value2, setValue2] = React.useState(0)
+import './App.css';
 
-  React.useEffect(() => {
+const App = () => {
+  const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [date, setDate] = useState(null);
+  const [rates, setRates] = useState(null);
+
+  useEffect(() => {
     async function getData() {
       const actualData = await fetch("https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?json")
       .then((response) => {
@@ -15,36 +18,44 @@ function App() {
       })
       .catch((err) => {
         console.warn(err)
-        alert("Not received info")
-      })
-      setValue1(actualData[25].rate)
-      setValue2(actualData[32].rate)
-      setDate(actualData[0].exchangedate)
-    }
-    getData()
-  }, [])
+        setError('No currency info');
+      });
 
-  const rates = {
-    UAH: 1,
-    USD: value1,
-    EUR: value2
+      setRates(actualData?.reduce((acc, item) => {
+        acc[item.cc] = item.rate;
+        return acc;
+      }, { [constants.RATES.UAH]: 1 }));
+
+      setDate(actualData?.[0]?.exchangedate);
+
+      setIsLoading(false);
+    }
+    getData();
+  }, []);
+
+  if (isLoading) {
+    return null;
   }
 
-
   return (
-    <div className="App">
-      <header className="App-header">
-        <h2>Official Currency Rates by National Bank of Ukraine</h2>
-        <h3>Stated for {date}</h3>
-        <div className='currency_rate_block'>
-          <div className='currency_rate_number'>{value1} UAH per 1 USD</div>
-          <div className='divider'></div>
-          <div className='currency_rate_number'>{value2} UAH per 1 EUR</div>
-        </div>
-      </header>
-      <Converter value1={value1} value2={value2} rates={rates} />
+    <div className="app">
+      {error
+        ? error
+        : <>
+          <header className="app-header">
+            <h2>Official Currency Rates by National Bank of Ukraine</h2>
+            <h3>Stated for {date}</h3>
+            <div className="currency_rate_block">
+              <div className="currency_rate_number">{rates[constants.RATES.USD]} UAH per 1 USD</div>
+              <div className="divider"></div>
+              <div className="currency_rate_number">{rates[constants.RATES.EUR]} UAH per 1 EUR</div>
+            </div>
+          </header>
+          <Converter rates={rates} />
+        </>
+      }
     </div>
   );
-}
+};
 
 export default App;
