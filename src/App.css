@@ -1,4 +1,4 @@
-.App {
+.app {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -6,7 +6,7 @@
   background-color: aqua;
 }
 
-.App-header {
+.app-header {
   position: fixed;
   top: 0;
   left: 0;
