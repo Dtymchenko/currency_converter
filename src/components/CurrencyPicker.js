@@ -18,6 +18,7 @@ CurrencyPicker.propTypes = {
     onSelectChange: PropTypes.func.isRequired,
     selectValue: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
     inputValue: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+    rates: PropTypes.shape()
 };
 
 export default CurrencyPicker;
